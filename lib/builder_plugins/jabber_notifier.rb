@@ -53,9 +53,9 @@ class JabberNotifier
       else
         'successful'
       end
-      message = "#{build.project.name} Build #{build.label} - #{status.upcase}"
+      message = "#{build.project.name} Build #{build.label} - #{status.upcase} #{status_icon(status)}"
       if Configuration.dashboard_url
-        message += ". See #{build.url}"
+        message += " See #{build.url}"
       end
       if build.successful?
         message << " \n"
@@ -65,7 +65,7 @@ class JabberNotifier
       notify(message)
     end
   end
- 
+
   def notify(message)
     #connect
     begin
@@ -109,6 +109,13 @@ class JabberNotifier
   end
   
   private
+  
+  def status_icon(status)
+    chars = { 'broken' => [0x1F4A5, 0x1F64A, 0x1F648, 0x1F640, 0x1F621, 0x1F631],
+              'fixed'  => [0x1F60E, 0x1F638, 0x1F31F, 0x1F44D, 0x1F438, 0x1F438] }[status]
+    return unless chars
+    chars.shuffle.first.chr(Encoding::UTF_8)
+  end
   
   def coverage_delta_text(project)
     delta = project.last_coverage_delta
