@@ -28,3 +28,4 @@ config/ccrb.properties
 pkg
 reports
 config/thin.yml
+.byebug_history
