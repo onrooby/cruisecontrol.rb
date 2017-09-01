@@ -189,7 +189,7 @@ EOF
   end
 
   def command
-    'rbfu bundle exec rake' #project.build_command or rake
+    project.build_command or rake
   end
   
   def rake_task
@@ -204,17 +204,18 @@ EOF
   end
 
   def rake
-    # Simply calling rake is this convoluted due to idiosyncrasies of Windows, Debian and JRuby.
-    # --nosearch flag here prevents CC.rb from building itself when a project has no Rakefile.
-    # ARGV.clear at the end prevents Test::Unit's AutoRunner from doing anything silly.
-    cc_build_path = Rails.root.join('tasks', 'cc_build.rake')
-    maybe_trace   = CruiseControl::Log.verbose? ? " << '--trace'" : ""
-    
-    if project.uses_bundler?
-      %{BUNDLE_GEMFILE=#{project.gemfile} #{Platform.bundle_cmd} exec rake -e "load '#{cc_build_path}'; ARGV << '--nosearch'#{maybe_trace} << 'cc:build'; Rake.application.run; ARGV.clear"}
-    else  
-      %{#{Platform.interpreter} -e "require 'rubygems' rescue nil; require 'rake'; load '#{cc_build_path}'; ARGV << '--nosearch'#{maybe_trace} << 'cc:build'; Rake.application.run; ARGV.clear"}
-    end
+    return 'rbfu bundle exec rake'
+    ## Simply calling rake is this convoluted due to idiosyncrasies of Windows, Debian and JRuby.
+    ## --nosearch flag here prevents CC.rb from building itself when a project has no Rakefile.
+    ## ARGV.clear at the end prevents Test::Unit's AutoRunner from doing anything silly.
+    #cc_build_path = Rails.root.join('tasks', 'cc_build.rake')
+    #maybe_trace   = CruiseControl::Log.verbose? ? " << '--trace'" : ""
+    #
+    #if project.uses_bundler?
+    #  %{BUNDLE_GEMFILE=#{project.gemfile} #{Platform.bundle_cmd} exec rake -e "load '#{cc_build_path}'; ARGV << '--nosearch'#{maybe_trace} << 'cc:build'; Rake.application.run; ARGV.clear"}
+    #else  
+    #  %{#{Platform.interpreter} -e "require 'rubygems' rescue nil; require 'rake'; load '#{cc_build_path}'; ARGV << '--nosearch'#{maybe_trace} << 'cc:build'; Rake.application.run; ARGV.clear"}
+    #end
   end
   
   def in_clean_environment_on_local_copy(&block)
