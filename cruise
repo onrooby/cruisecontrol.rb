@@ -1,4 +1,4 @@
-#!/usr/local/bin/rbfu @2.0.0 ruby
+#!/usr/bin/env ruby
 
 ENV["RAILS_ENV"] = "production"
 ENV_PATH = File.expand_path("../config/environment", __FILE__)

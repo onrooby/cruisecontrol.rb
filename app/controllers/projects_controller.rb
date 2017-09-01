@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   before_filter :disable_build_triggers, :only => [:build, :kill_build]
-  before_filter :disable_add_project, :only => :create
+  before_filter :enable_add_project, :only => :create
   
   def index
     @projects = Project.all
@@ -73,27 +73,6 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def code
-    if Configuration.disable_code_browsing
-      render :text => "Code browsing disabled" and return
-    end
-
-    @project = Project.find(params[:id])
-    render :text => "Project #{params[:id].inspect} not found", :status => 404 and return unless @project 
-
-    path = File.join(@project.path, 'work', params[:path])
-    @line = params[:line].to_i if params[:line]
-
-    if File.directory?(path)
-      render :text => 'Viewing of source directories is not supported yet', :status => 500 
-    elsif File.file?(path)
-      @content = File.read(path)
-    else
-      render_not_found
-    end
-  end
-
-
   private
 
     def render_projects_partial(projects)
@@ -108,8 +87,7 @@ class ProjectsController < ApplicationController
       { 'name' => project.name }
     end
     
-    def disable_add_project
-      return unless Configuration.disable_add_project
-      render :text => 'Build requests are not allowed', :status => :forbidden
+    def enable_add_project
+      render(text: 'Build requests are not allowed', status: :forbidden) unless Configuration.enable_add_project
     end
 end

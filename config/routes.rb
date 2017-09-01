@@ -1,6 +1,6 @@
 CruiseControl::Application.routes.draw do
   match '/' => 'projects#index', :as => :root
-  match 'projects/code/:id/*path' => 'projects#code', :as => :code
+  #match 'projects/code/:id/*path' => 'projects#code', :as => :code
   
   resources :projects do
     member do

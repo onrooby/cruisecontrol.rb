@@ -34,29 +34,13 @@ module BuildsHelper
   end
   
   def format_build_log(log)
-    highlight_test_count(link_to_code(convert_ansi_colors(h(log))))
+    highlight_test_count(convert_ansi_colors(h(log))).html_safe
   end
   
   def link_to_changeset
-    if review_changeset_url = Configuration.review_changeset_url
+    if review_changeset_url = @project.review_changeset_url
       content_tag('p') do
         button_tag('Review changeset', :href => review_changeset_url.sub('%{changeset}', @build.revision.to_s))
-      end
-    end
-  end
-  
-  def link_to_code(log)
-    return log if Configuration.disable_code_browsing
-    @work_path ||= File.expand_path(@project.path + '/work')
-    
-    log.gsub(/(\#\{RAILS_ROOT\}\/)?([\w\.-]*\/[ \w\/\.-]+)\:(\d+)/) do |match|
-      path = File.expand_path($2, @work_path)
-      line = $3
-      if path.index(@work_path) == 0
-        path = path[@work_path.size..-1]
-        link_to(match, "/projects/code/#{h @project.name}#{path}?line=#{line}##{line}")
-      else
-        match
       end
     end
   end

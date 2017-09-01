@@ -2,7 +2,7 @@
 # each time a build is triggered and yielded back to be configured by cruise_config.rb.
 class Project
   attr_reader :name, :plugins, :build_command, :rake_task, :config_tracker, :path, :settings, :config_file_content, :error_message
-  attr_accessor :source_control, :scheduler, :use_bundler, :gemfile, :bundler_args
+  attr_accessor :source_control, :scheduler, :use_bundler, :gemfile, :bundler_args, :review_changeset_url
 
   alias_method :id, :name
   
@@ -36,6 +36,7 @@ class Project
 
     def read(dir, load_config = true)
       Project.new(:name => File.basename(dir)).tap do |project|
+        debugger
         self.current_project = project
         project.load_config if load_config
       end
@@ -56,7 +57,7 @@ class Project
     end
 
     def load_project(dir)
-      read(dir, load_config = false).tap do |project|
+      read(dir, load_config = true).tap do |project|
         project.path = dir
       end
     end
@@ -100,7 +101,7 @@ class Project
     @config_file_content = ''
     @error_message = ''
     @triggers = [ ChangeInSourceControlTrigger.new(self) ]
-    @bundler_args = %W(--path=#{self.gem_install_path} --gemfile=#{self.gemfile} --no-color)
+    @bundler_args = %W(--path=#{self.gem_install_path} --gemfile=#{self.gemfile})
 
     self.source_control = attrs[:scm] if attrs[:scm]
 
@@ -551,11 +552,16 @@ class Project
   end
 
   def gem_install_path
-    File.join(self.local_checkout, "vendor")
+    File.join(self.local_checkout, 'vendor', 'bundle')
   end
 
   def gemfile
     File.join(self.local_checkout, @gemfile || "Gemfile")
+  end
+  
+  def ruby_version
+    file = Pathname.new(self.local_checkout).join('.ruby-version')
+    file.read.strip if file.exist?
   end
 
   def environment

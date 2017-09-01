@@ -60,6 +60,8 @@ module CruiseControl
   end
 end
 
+ActionController::Base.config.relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT'] || ''
+
 unless defined? CRUISE_DATA_ROOT
   CRUISE_DATA_ROOT = CruiseControl.data_root.to_s
   puts "cruise data root = '#{CRUISE_DATA_ROOT}'"

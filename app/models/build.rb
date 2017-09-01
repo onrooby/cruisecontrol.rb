@@ -189,7 +189,7 @@ EOF
   end
 
   def command
-    project.build_command or rake
+    'rbfu bundle exec rake' #project.build_command or rake
   end
   
   def rake_task
@@ -272,7 +272,11 @@ EOF
   private
     
     def bundle(*args)
-      ( [ "BUNDLE_GEMFILE=#{project.gemfile}", Platform.bundle_cmd ] + args.flatten ).join(" ")
+      if version = project.ruby_version
+        ["BUNDLE_GEMFILE=#{project.gemfile}", "rbfu @#{version} bundle", *args.flatten].join(' ')
+      else
+        ["BUNDLE_GEMFILE=#{project.gemfile}", Platform.bundle_cmd, *args.flatten].join(' ')
+      end
     end
 
 end
