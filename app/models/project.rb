@@ -36,7 +36,6 @@ class Project
 
     def read(dir, load_config = true)
       Project.new(:name => File.basename(dir)).tap do |project|
-        debugger
         self.current_project = project
         project.load_config if load_config
       end

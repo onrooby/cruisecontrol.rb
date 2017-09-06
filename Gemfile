@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.10'
+ruby '2.3.4'
 
 gem 'rails', '3.0.20'
 gem "tzinfo", "0.3.27"
